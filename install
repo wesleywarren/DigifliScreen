@@ -1,0 +1,74 @@
+#!/usr/bin/bash
+
+# Digifli Bulletin Board installer version 0.2  3/13/2025
+# Author: Wes Warren  wes@digifli.com  
+
+# Save this file to your home directory /home/pi (~/), give it permissions, then run it
+# here are the commands to download and run this script:
+
+# cd ~/
+# sudo wget https://digifli.net/ws/install
+# sudo chmod 775 ./install
+# sudo ./install
+
+
+# This script is designed to run on Raspberry Pi 3b or higher hardware. 
+# The Pi should have a current install that includes the standard desktop 
+# and Chromium. This script was created and tested on: 
+# Raspberry Pi OS with desktop
+# Release date: November 19th 2024
+# System: 32-bit
+# Kernel version: 6.6
+# Debian version: 12 (bookworm)
+# https://www.raspberrypi.com/software/
+
+# See Digifli.net for more information
+
+set -e #exit on fail
+
+LOGFILE="/home/pi/Digifli-install.log"
+echo "$(date +'%Y-%m-%d %H:%M:%S') - Starting installation..." | tee -a $LOGFILE
+
+echo "Installing python3-screeninfo & psutil" | tee -a $LOGFILE
+sudo apt install -y python3-screeninfo #need this 
+sudo apt install -y python3-psutil #need this 
+
+echo "Updating lightdm configuration..." | tee -a $LOGFILE
+sudo cp /etc/lightdm/lightdm.conf /etc/lightdm/lightdm.conf.bak
+sudo sed -i "s/#xserver-command=X/xserver-command=X -nocursor/" /etc/lightdm/lightdm.conf
+
+cd /home/pi/
+
+# Download necessary files
+FILES=("server.py" "digiserver.service" "digifli.py" "digifli.service")
+BASE_URL="https://digifli.net/ws"
+
+for FILE in "${FILES[@]}"; do
+    echo "Downloading $FILE..." | tee -a $LOGFILE
+    wget -q "$BASE_URL/$FILE" -O "/home/pi/$FILE"
+    chmod 775 "/home/pi/$FILE"
+done
+
+echo " - Setting up digifli services with systemctl..." | tee -a $LOGFILE
+sudo mv /home/pi/digifli.service /etc/systemd/system/digifli.service
+sudo mv /home/pi/digiserver.service /etc/systemd/system/digiserver.service
+
+sudo systemctl daemon-reload
+
+sudo systemctl enable digifli.service
+sudo systemctl start digifli.service
+sudo systemctl enable digiserver.service
+sudo systemctl start digiserver.service
+
+echo "completed: systemctl enable digifli.service asnd digiserver.service nano digifliS..." | tee -a $LOGFILE
+
+
+#update cron to reboot nightly
+echo "Updating crontab to reboot at 3 AM..." | tee -a $LOGFILE
+(crontab -l -u pi 2>/dev/null | grep -v "0 3 \* \* \* sudo reboot"; echo "0 3 * * * sudo reboot") | crontab -u pi -
+echo "duplicates removed, writing new command" | tee -a $LOGFILE
+(crontab -l -u pi; echo "0 3 * * * sudo reboot") | crontab -u pi -
+
+echo "All done getting ready to reboot..." | tee -a $LOGFILE
+echo " - - - - - - - End Digifli Install Log - - - - " | tee -a $LOGFILE
+sudo reboot now
