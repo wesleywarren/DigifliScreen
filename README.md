@@ -13,7 +13,13 @@ Start in your Pi home directory
 <P></P>
 #Download the install script
 <BR>
-#wget <BR> 
+To download from GitHub:<BR>
+#wget https://github.com/wesleywarren/DigifliScreen/blob/11c3964b1e0b9bef9e7ab64bdf0dae3074bb5a68/install <BR> 
+<BR>OR<BR>
+To download directly:<BR>
+#wget https://digifli.net/ws/install
+<BR><BR>
+
 #chmod 775 install.sh <BR>
 #sudo ./install.sh <BR>
 
