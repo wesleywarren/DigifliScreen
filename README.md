@@ -19,7 +19,11 @@ To download from GitHub:<BR>
 To download directly:<BR>
 #wget https://digifli.net/ws/install
 <BR><BR>
-
+Verify the script has not been modified
+<BR>
+# sha256sum ./install <BR>
+936c5da9bd5acff7702e4cc002a3731da87b1ef09464c10c4b79b76786727d5e  ./install
+<BR><BR>
 #chmod 775 install.sh <BR>
 #sudo ./install.sh <BR>
 
