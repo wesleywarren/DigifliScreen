@@ -1,14 +1,13 @@
 # DigifliScreen
-Run a Digifli screen on a Raspberry Pi
+Run a Digifli screen on a Raspberry Pi 3b+ or higher
 
-go to yoru home directory 
+go to your home directory 
 cd ~/
 
-Download the install.sh 
+#Download the install script
+
+wget 
 chmod 775 install.sh
-
-Then run it
-
 sudo ./install.sh
 
 
